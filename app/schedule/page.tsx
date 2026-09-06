@@ -3,6 +3,7 @@ import {
   getDivision1Matchups,
   getDivision2Matchups,
 } from "@/lib/matchups";
+export const dynamic = "force-dynamic";
 
 export default async function SchedulePage() {
   const division1Matchups = await getDivision1Matchups(18);
