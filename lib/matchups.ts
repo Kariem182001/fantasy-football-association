@@ -74,9 +74,11 @@ async function getMatchups(
     .order("id", { ascending: true });
 
   if (error) {
-    console.error("Error loading matchups:", error);
-    return [];
-  }
+  console.error("Error loading matchups:", error);
+  return [];
+}
+
+console.log("MATCHUPS FROM SUPABASE:", data);
 
   return (data || []).map((matchup) => ({
     id: matchup.id,
