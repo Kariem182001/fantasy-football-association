@@ -4,6 +4,8 @@ import {
   getDivision2TeamRecords,
 } from "@/lib/matchups";
 
+export const dynamic = "force-dynamic";
+
 export default async function StandingsPage() {
   const [division1, division2] = await Promise.all([
     getDivision1TeamRecords(18),
@@ -25,7 +27,7 @@ export default async function StandingsPage() {
               <th className="px-5 py-4">GP</th>
               <th className="px-5 py-4">W</th>
               <th className="px-5 py-4">L</th>
-              <th className="px-5 py-4">Win %</th>
+              <th className="px-5 py-4">Points For</th>
             </tr>
           </thead>
 
@@ -55,8 +57,8 @@ export default async function StandingsPage() {
                   {team.losses}
                 </td>
 
-                <td className="px-5 py-5 text-slate-400">
-                  {team.winPercentage}%
+                <td className="px-5 py-5 font-semibold text-blue-400">
+                  {team.pointsFor}
                 </td>
               </tr>
             ))}
@@ -98,7 +100,7 @@ export default async function StandingsPage() {
           </h2>
 
           <p className="mt-2 text-sm text-slate-500">
-            Updated automatically from Sleeper
+            Updated automatically from your FFA schedule and results
           </p>
 
           <StandingsTable teams={division1} />
@@ -117,7 +119,7 @@ export default async function StandingsPage() {
           </h2>
 
           <p className="mt-2 text-sm text-slate-500">
-            Updated automatically from Sleeper
+            Updated automatically from your FFA schedule and results
           </p>
 
           <StandingsTable teams={division2} />
