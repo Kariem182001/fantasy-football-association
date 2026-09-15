@@ -15,7 +15,7 @@ export type TeamRecord = {
   gamesPlayed: number;
   wins: number;
   losses: number;
-  winPercentage: number;
+  pointsFor: number;
 };
 
 export type HeadToHeadRecord = {
@@ -123,7 +123,7 @@ function calculateTeamRecords(
       gamesPlayed: 0,
       wins: 0,
       losses: 0,
-      winPercentage: 0,
+      pointsFor: 0,
     };
   }
 
@@ -135,34 +135,46 @@ function calculateTeamRecords(
       continue;
     }
 
+    /*
+      A 0-0 matchup is treated as an unplayed game.
+      This prevents future scheduled games from
+      counting toward Games Played.
+    */
+    if (
+      matchup.team1Points === 0 &&
+      matchup.team2Points === 0
+    ) {
+      continue;
+    }
+
     team1.gamesPlayed++;
     team2.gamesPlayed++;
+
+    team1.pointsFor += matchup.team1Points;
+    team2.pointsFor += matchup.team2Points;
 
     if (matchup.team1Points > matchup.team2Points) {
       team1.wins++;
       team2.losses++;
-    } else if (matchup.team2Points > matchup.team1Points) {
+    } else if (
+      matchup.team2Points > matchup.team1Points
+    ) {
       team2.wins++;
       team1.losses++;
     }
   }
 
-  for (const record of Object.values(records)) {
-    record.winPercentage =
-      record.gamesPlayed > 0
-        ? Number(
-            (
-              (record.wins / record.gamesPlayed) *
-              100
-            ).toFixed(1)
-          )
-        : 0;
-  }
-
+  /*
+    Standings are sorted primarily by Points For.
+    Highest Points For = first place.
+    
+    If two teams have the same Points For,
+    wins are used as the tiebreaker.
+  */
   return Object.values(records).sort(
     (a, b) =>
-      b.wins - a.wins ||
-      b.winPercentage - a.winPercentage
+      b.pointsFor - a.pointsFor ||
+      b.wins - a.wins
   );
 }
 
@@ -382,7 +394,10 @@ export async function getDivision1RivalryStats(
 ) {
   const matchups = await getDivision1Matchups(weeks);
 
-  return calculateRivalryStats(teamName, matchups);
+  return calculateRivalryStats(
+    teamName,
+    matchups
+  );
 }
 
 /* =========================
@@ -395,5 +410,8 @@ export async function getDivision2RivalryStats(
 ) {
   const matchups = await getDivision2Matchups(weeks);
 
-  return calculateRivalryStats(teamName, matchups);
+  return calculateRivalryStats(
+    teamName,
+    matchups
+  );
 }
